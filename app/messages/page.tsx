@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useApp } from "@/components/AppProvider";
-import { TEMPLATES, buildMessage } from "@/lib/templates";
+import { STOP_LINE, TEMPLATES, buildMessage, findUnknownTokens } from "@/lib/templates";
 
 export default function MessagesPage() {
   const { state, update, ready } = useApp();
@@ -17,7 +17,8 @@ export default function MessagesPage() {
     business: settings.business,
     bookingLink: settings.bookingLink,
   });
-  const hasStop = /reply\s+stop\s+to\s+opt\s*out/i.test(settings.template);
+  const hasStop = settings.template.includes(STOP_LINE);
+  const unknown = findUnknownTokens(settings.template);
 
   return (
     <>
@@ -46,6 +47,11 @@ export default function MessagesPage() {
           Edit the text. Use {"{name}"}, {"{job}"}, {"{business}"}, {"{booking_link}"}
           <textarea className="input mt-1" rows={5} value={settings.template} onChange={(e) => set({ template: e.target.value })} />
         </label>
+        {unknown.length > 0 && (
+          <p role="alert" className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+            Unknown placeholder{unknown.length > 1 ? "s" : ""}: {unknown.join(", ")}. {unknown.length > 1 ? "These" : "This"} will be sent as written. Use {"{name}"}, {"{job}"}, {"{business}"} or {"{booking_link}"}.
+          </p>
+        )}
         {!hasStop && <p className="text-xs text-slate-500">&quot;Reply STOP to opt out&quot; is added automatically to every message (POPIA).</p>}
       </section>
 

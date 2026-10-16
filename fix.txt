@@ -1,0 +1,8 @@
+Fix these 7 bugs in this Next.js app (this folder only; no accounts, deploys, git push or spending). Add vitest tests for each. Then run npm run build and npm test and fix until both pass clean. Do not run git commands. End with a short summary.
+1) Opt-out: ensureOptOut must check for the exact STOP_LINE "Reply STOP to opt out" (case-sensitive exact text); otherwise append it. No loose regex.
+2) Mobile-only: normalisePhone keeps working, but add isMobile() (SA mobile prefixes 6x,7x,8x after +27). Landlines are flagged in preview ("not a mobile - can't WhatsApp") and excluded from the send queue.
+3) Multi-number cells: split on / , ; | and "ext"/"x" and use the first valid number (e.g. "0821234567 / 0831112222" -> +27821234567, "082-123-4567 ext 2" -> +27821234567).
+4) Free limit: count a send when the wa.me link is opened (not only on "I sent it"); disable the link once 10 are used. When Supabase is configured and user is signed in, enforce server-side per account via an API route (/api/usage) that increments/checks a counter (Supabase table, SQL added to README); keep localStorage fallback when not configured.
+5) Founder price: /api/paystack must decide founder vs standard server-side from a founder slot counter (Supabase table when configured; in-memory/stub fallback otherwise), ignoring the client's founder flag; return remaining founder slots on GET.
+6) Placeholders: fillTemplate matches {name},{job},{business},{booking_link} case-insensitively; add findUnknownTokens() and show a warning in the template editor for unknown {...} tokens.
+7) Empty job: when job is empty, templates use alternative sentence wording (no awkward "your last job"); implement e.g. per-template variants without {job}.

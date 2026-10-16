@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { detectColumns, type ColumnMapping, type Field } from "@/lib/columns";
 import { buildContacts } from "@/lib/contacts";
-import { normalisePhone } from "@/lib/phone";
+import { NOT_MOBILE_MESSAGE, isMobile, normalisePhone } from "@/lib/phone";
 import type { Table } from "@/lib/parse";
 import type { Contact } from "@/lib/types";
 
@@ -27,6 +27,7 @@ export default function MappingPreview({
 
   const working: Table = useMemo(() => ({ headers: table.headers, rows }), [table.headers, rows]);
   const built = useMemo(() => buildContacts(working, mapping, existing, consent), [working, mapping, existing, consent]);
+  const landlines = useMemo(() => built.contacts.filter((c) => !isMobile(c.phone)).length, [built]);
 
   function setCol(f: Field, v: string) {
     setMapping((m) => {
@@ -86,9 +87,11 @@ export default function MappingPreview({
           </thead>
           <tbody>
             {shown.map((r, ri) => {
-              const bad = mapping.phone !== undefined && !normalisePhone(r[mapping.phone]);
+              const norm = mapping.phone !== undefined ? normalisePhone(r[mapping.phone]) : null;
+              const bad = mapping.phone !== undefined && !norm;
+              const landline = Boolean(norm) && !isMobile(norm!);
               return (
-                <tr key={ri} className={bad ? "bg-red-50" : ""}>
+                <tr key={ri} className={bad ? "bg-red-50" : landline ? "bg-amber-50" : ""}>
                   {table.headers.map((_, ci) => (
                     <td key={ci} className="p-0.5">
                       <input
@@ -97,6 +100,7 @@ export default function MappingPreview({
                         value={r[ci] ?? ""}
                         onChange={(e) => edit(ri, ci, e.target.value)}
                       />
+                      {landline && ci === mapping.phone && <span className="block px-1 text-xs text-amber-700">{NOT_MOBILE_MESSAGE}</span>}
                     </td>
                   ))}
                 </tr>
@@ -110,6 +114,7 @@ export default function MappingPreview({
         <p className="text-sm">
           <b className="text-emerald-700">{built.contacts.length}</b> valid new contacts
           {built.duplicates > 0 && <> · {built.duplicates} duplicates skipped</>}
+          {landlines > 0 && <span className="text-amber-700"> · {landlines} {NOT_MOBILE_MESSAGE} (kept, but not queued)</span>}
           {built.invalid > 0 && <span className="text-red-600"> · {built.invalid} with invalid phone numbers skipped</span>}
         </p>
         {mapping.phone === undefined && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">Pick which column holds the phone number.</p>}

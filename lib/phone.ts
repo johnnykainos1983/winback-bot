@@ -5,7 +5,19 @@
  */
 export function normalisePhone(input: unknown): string | null {
   if (input === null || input === undefined) return null;
-  let s = String(input).trim();
+  // Multi-number cells ("082 123 4567 / 083 111 2222", "..., ...", "... ext 2"): first valid number wins.
+  for (const part of String(input).split(NUMBER_SPLIT)) {
+    const n = normaliseSingle(part);
+    if (n) return n;
+  }
+  return null;
+}
+
+/** Separators between numbers in one cell: / , ; | and "ext" / "x" extension markers. */
+const NUMBER_SPLIT = /[/,;|]|(?<![a-z])(?:ext\.?|x)(?![a-z])/i;
+
+function normaliseSingle(input: string): string | null {
+  let s = input.trim();
   if (!s) return null;
   // Spreadsheet exports sometimes give floats / sci notation e.g. 8.2123E+8
   if (/^\d+(\.\d+)?e\+?\d+$/i.test(s)) s = String(Math.round(Number(s)));
@@ -29,6 +41,13 @@ export function normalisePhone(input: unknown): string | null {
   if (!/^[1-8]\d{8}$/.test(d)) return null;
   return "+27" + d;
 }
+
+/** SA mobile numbers are +27 followed by 6x, 7x or 8x (9 digits total). Landlines (1x-5x) can't use WhatsApp. */
+export function isMobile(e164: string): boolean {
+  return /^\+27[678]\d{8}$/.test(e164);
+}
+
+export const NOT_MOBILE_MESSAGE = "not a mobile - can't WhatsApp";
 
 export function isValidPhone(input: unknown): boolean {
   return normalisePhone(input) !== null;

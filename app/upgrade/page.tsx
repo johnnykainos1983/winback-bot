@@ -17,23 +17,30 @@ export default function UpgradePage() {
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
   const [providers, setProviders] = useState<ProviderInfo[]>([]);
+  const [founderRemaining, setFounderRemaining] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/send")
       .then((r) => r.json())
       .then((d) => setProviders(d.providers ?? []))
       .catch(() => {});
+    fetch("/api/paystack")
+      .then((r) => r.json())
+      .then((d) => setFounderRemaining(typeof d.founderRemaining === "number" ? d.founderRemaining : null))
+      .catch(() => {});
   }, []);
 
-  async function subscribe(founder: boolean) {
+  // The server decides founder vs standard from its slot counter; nothing about the price is sent from here.
+  async function subscribe() {
     setMsg("");
     const res = await fetch("/api/paystack", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, founder }),
+      body: JSON.stringify({ email }),
     });
     const d = await res.json();
     setMsg(d.error || d.message || "Done");
+    if (typeof d.founderRemaining === "number") setFounderRemaining(d.founderRemaining);
   }
 
   return (
@@ -46,7 +53,7 @@ export default function UpgradePage() {
       </section>
 
       <section className="rounded-2xl bg-emerald-700 p-5 text-white shadow">
-        <p className="inline-block rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-slate-900">FOUNDER PRICE - first {PRICE_ZAR.founderSlots} customers</p>
+        <p className="inline-block rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-slate-900">FOUNDER PRICE - first {PRICE_ZAR.founderSlots} customers{founderRemaining !== null && ` (${founderRemaining} left)`}</p>
         <p className="mt-2 text-4xl font-extrabold">
           R{PRICE_ZAR.founder}
           <span className="text-lg font-medium"> / month</span>
@@ -60,11 +67,8 @@ export default function UpgradePage() {
           <li>✓ POPIA opt-out and consent tools</li>
         </ul>
         <input type="email" className="input mt-4 !text-slate-900" placeholder="your@email.co.za" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <button className="btn mt-3 w-full bg-white text-emerald-800" onClick={() => void subscribe(true)}>
-          Get founder price R{PRICE_ZAR.founder}/month
-        </button>
-        <button className="mt-2 w-full text-sm underline" onClick={() => void subscribe(false)}>
-          or standard R{PRICE_ZAR.standard}/month
+        <button className="btn mt-3 w-full bg-white text-emerald-800" onClick={() => void subscribe()}>
+          {founderRemaining === 0 ? `Subscribe R${PRICE_ZAR.standard}/month` : `Subscribe (founder price R${PRICE_ZAR.founder}/month while slots last)`}
         </button>
         {msg && <p className="mt-3 rounded-lg bg-black/20 p-3 text-sm">{msg}</p>}
         <p className="mt-3 text-xs text-emerald-200">Payments run in Paystack test mode only in this build.</p>

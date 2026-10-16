@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useApp } from "@/components/AppProvider";
 import Uploader from "@/components/Uploader";
 import MappingPreview from "@/components/MappingPreview";
-import { formatPhone } from "@/lib/phone";
+import { NOT_MOBILE_MESSAGE, formatPhone, isMobile } from "@/lib/phone";
 import type { Table } from "@/lib/parse";
 
 export default function ContactsPage() {
