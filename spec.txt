@@ -1,0 +1,11 @@
+Build "WinBack Bot" MVP in THIS folder (current directory only; do not touch other folders). Do NOT create accounts, deploy, git push, or spend money. Work efficiently.
+Stack: Next.js (App Router, TypeScript, Tailwind), scaffold manually or with create-next-app non-interactively into "." . Extremely user-friendly, mobile-first UI for South African tradespeople (plumbers, electricians etc).
+Features:
+1) Contact upload: drag-and-drop CSV/XLSX (papaparse + xlsx), or paste text (WhatsApp / Google Contacts export). Auto-detect name/phone/last job/last job date columns (pure function in lib/columns.ts). Normalise phones to +27 E.164 (lib/phone.ts: handles 082..., 27..., +27, spaces/dashes, 0027; rejects invalid). De-dupe by phone. Preview table where user can fix fields/mapping.
+2) Message generator: personalised "we miss you / time for a service" templates with {name},{job},{business},{booking_link}; editable; live preview.
+3) Free-tier send queue: one-tap wa.me links in fast click-through queue (open WhatsApp, mark sent, next). Free tier limited to 10 messages total (enforced).
+4) POPIA: every message auto-appends "Reply STOP to opt out" if missing; opt-out list that blocks numbers from queue; consent flag per contact (only consented contacts queued).
+5) Paid tier page: R149/month, founder price R99 for first 50. Paystack stub via env PAYSTACK_SECRET_KEY (test mode only, reject keys not starting sk_test_); API route that returns stub/"not configured" when absent.
+6) Bulk send via WhatsApp Cloud API and SMS as paid add-ons: provider interface + stub implementations in lib/providers/, behind env vars (WHATSAPP_CLOUD_TOKEN, WHATSAPP_PHONE_NUMBER_ID, SMS_API_KEY), disabled/not active.
+7) Supabase auth + storage behind env vars (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY); storage abstraction with localStorage fallback so app fully works locally without Supabase. Build must not require env vars.
+Include README.md (setup, features, env), .env.example, vitest tests for phone normalisation and column detection (npm test = "vitest run"). Then run npm install, npm run build and npm test yourself and fix until all pass clean. Finish with a short summary.
