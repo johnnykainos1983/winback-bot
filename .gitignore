@@ -10,3 +10,10 @@ next-env.d.ts
 claude-out.txt
 
 claude-fix.txt
+.vercel
+claude-*.txt
+push-log.txt
+vlogin.txt
+claude-*.txt
+push-log.txt
+vlogin.txt

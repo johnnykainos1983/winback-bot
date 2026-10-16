@@ -5,12 +5,16 @@
  */
 export function normalisePhone(input: unknown): string | null {
   if (input === null || input === undefined) return null;
-  // Multi-number cells ("082 123 4567 / 083 111 2222", "..., ...", "... ext 2"): first valid number wins.
+  // Multi-number cells ("082 123 4567 / 083 111 2222", "..., ...", "... ext 2"): first valid number wins,
+  // but a mobile beats an earlier landline ("021 456 7788 / 082 456 7788") since only mobiles can WhatsApp.
+  let firstValid: string | null = null;
   for (const part of String(input).split(NUMBER_SPLIT)) {
     const n = normaliseSingle(part);
-    if (n) return n;
+    if (!n) continue;
+    if (isMobile(n)) return n;
+    firstValid ??= n;
   }
-  return null;
+  return firstValid;
 }
 
 /** Separators between numbers in one cell: / , ; | and "ext" / "x" extension markers. */

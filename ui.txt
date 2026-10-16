@@ -1,0 +1,7 @@
+Use the frontend-design skill (invoke it first and follow its guidance) to redesign this app's UI. Only touch UI (app/**/page.tsx, layout, components, globals.css, tailwind config). Do NOT change logic in lib/, API routes, or tests; all existing behaviour and text that tests rely on must remain. No new paid services, no accounts, no git commands, no deploys.
+Goal: premium, modern, mobile-first, trustworthy design for South African tradespeople (plumbers, electricians, builders). Distinctive, not templated: a confident visual identity (typography via next/font, colour palette, spacing), large tap targets, high contrast for outdoor use.
+- / : strong hero (clear value prop: win back old customers via WhatsApp, POPIA-friendly), trust cues, then a clear 3-step flow Upload > Messages > Send with a persistent step indicator across pages; upload area stays the main action.
+- /messages: polished template picker + editor + live WhatsApp-style preview bubble.
+- /queue: polished one-at-a-time card queue, progress, free-limit meter, big "Open WhatsApp" and "I sent it - next" buttons.
+- /upgrade: clean pricing page (R149/month, founder R99 for first 50 with slots remaining), feature comparison free vs paid.
+Keep it accessible (contrast, focus states, aria). Then run npm run build and npm test and fix until both pass clean. End with a short summary of what changed.

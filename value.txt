@@ -1,0 +1,8 @@
+Follow-up in this folder. No git, deploys, accounts or paid services. Don't change lib/ logic, API routes or existing tests (new tests OK).
+1) Use the shadcn MCP server configured in .mcp.json (and the shadcn CLI: npx shadcn@latest init / add, non-interactive with defaults/--yes) to add shadcn/ui components (button, card, badge, input, label, slider, table, tabs, tooltip, progress, separator as needed) and refactor the UI to use them, themed to the existing identity (ink navy, hi-vis yellow, WhatsApp green, Barlow). Invoke the frontend-design skill too, for a premium, enterprise-grade look.
+2) Make it FEEL valuable and a great deal:
+- Value-first messaging, e.g. "One returning customer can pay for a whole year" (phrase as possibility, no invented stats, no fake testimonials).
+- ROI estimator component (pure function in lib/roi.ts + vitest test): old customers x avg job value (R) x return rate (%) = Rands won back; plus "months of WinBack paid for" vs R149. Sliders/inputs, sensible defaults clearly labelled as your own estimates. Show it on / and /upgrade.
+- Premium /upgrade: crossed-out anchor price (e.g. R299 "regular value" only if framed honestly as the planned standard price; otherwise strike R149 next to R99 founder), R99 founder for first 50 with slots remaining, R149/month standard, Free vs Pro comparison table, FAQ.
+- Trust signals: POPIA-friendly consent + STOP, data stays on your device (free), secure, made for SA trades. Polished micro-interactions (respect reduced motion).
+Then npm run build and npm test until clean. Short summary.
